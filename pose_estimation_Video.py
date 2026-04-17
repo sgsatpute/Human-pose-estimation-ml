@@ -24,15 +24,16 @@ net = cv2.dnn.readNetFromTensorflow("graph_opt.pb")
 
 thres = 0.2
 
-cap = cv2.VideoCapture("run1.mp4")
+cap = cv2.VideoCapture("run1 (1).mp4")
 
 def pose_estimation(cap):
-    
-    
-    
+    out_writer = None
+
     while(cap.isOpened()):
         
         ret, frame = cap.read()
+        if not ret:
+            break
         frame = cv2.resize(frame,(0,0),fx = 0.5,fy = 0.5)
         
         frameWidth = frame.shape[1]
@@ -72,30 +73,19 @@ def pose_estimation(cap):
                 cv2.ellipse(frame, points[idTo], (3, 3), 0, 0, 360, (0, 0, 255), cv2.FILLED)
                 
         t, _ = net.getPerfProfile()
-        img = frame
-        
-        
-        size = (frameWidth, frameHeight) 
-        
-        cv2.imshow('pose',frame)
-        
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+
+        if out_writer is None:
+            size = (frameWidth, frameHeight)
+            out_writer = cv2.VideoWriter('output_pose.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, size)
+
+        out_writer.write(frame)
+
     cap.release()
-
-    cv2.destroyAllWindows()
-    
-        
-    
-
-output = pose_estimation(cap = cap)
+    if out_writer is not None:
+        out_writer.release()
 
 
-cap.release()
-
-
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+pose_estimation(cap=cap)
     
     
             

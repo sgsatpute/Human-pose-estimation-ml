@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Treat model files as binary to prevent corruption
+*.pb binary
